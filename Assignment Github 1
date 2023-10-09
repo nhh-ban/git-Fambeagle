@@ -1,6 +1,5 @@
-library("tidyverse")
-library("dplyr")
-library("ggplot2")
+library(tidyverse)
+library(ggplot2)
 
 # Problem 1
 # was easy
@@ -74,17 +73,29 @@ ggplot(galaxies, aes(x = D, y = log_lk)) +
   labs(title = "Scatter plot",
        x = "D",
        y = "log_lk")
+
 #testing out my theory
 firstquantile <- quantile(galaxies$log_lk, 0.25, na.rm = TRUE)
-# creating the new plot with the color of my choosing 
 
-ggplot(galaxies, aes(x = D, y = log_lk)) +
-  geom_point(aes(color = (log_lk <= firstquantile))) +
-  scale_color_manual(values = c("black", "red"), guide = FALSE) +
-                       theme_classic() + 
-                       labs(title = "Oh hello there",
-                            x = "Far far away",
-                            y = "Size")
+# creating the new plot with the color that represent the small galaxies 
+
+Tatooine <- ggplot(galaxies, aes(x = D, y = log_lk)) + 
+  geom_point()
+
+# Add points from the first quantile in red
+Tatooine <- Tatooine + geom_point(data = subset(galaxies, log_lk <= firstquantile), 
+                    aes(x = D, y = log_lk), color = "red")
+# View plot
+Tatooine
+# Now i want to add some lables
+
+Tatooine <- Tatooine + theme_classic() + 
+  labs(title = "Oh hello there",
+       x = "Far far away",
+       y = "Size")
+# view 
+Tatooine
+
 # oh hello there 
 # This plot represents great this effect
 # We can clearly see that the smaller objects are filtered inn at the bottom
@@ -92,3 +103,11 @@ ggplot(galaxies, aes(x = D, y = log_lk)) +
 # However we can clearly see that the amount of observations beyond a certain 
 # distance have great impact on the amount of obesrvations seen
 # thus somewhat confirming what we already where thinking
+# This plot represents great this effect
+# We can clearly see that the smaller objects are filtered inn at the bottom
+# of the scale, but the distance towards them does not seem to matter that much
+# However we can clearly see that the amount of observations beyond a certain 
+# distance have great impact on the amount of obesrvations seen
+# thus somewhat confirming what we already where thinking
+            
+          
