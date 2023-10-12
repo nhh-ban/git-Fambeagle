@@ -1,0 +1,113 @@
+library(tidyverse)
+library(ggplot2)
+
+# Problem 1
+# was easy
+
+# Problem 2
+# For this problem i had issues as i did not understand what to do, and i dont understand
+# the new git hub stuff, and the showcase on the lecture was not easy to follow
+
+# i had no idea how to proceede without the help from the lecture notes
+galaxy <- "http://www.sao.ru/lv/lvgdb/article/suites_dw_Table1.txt"
+
+galaxy <- read_lines(galaxy)
+# i was just struggling more with the git hub, did not even get anything to work
+# super frustrating and very weird, terminal gets lots of erros,
+#However i did not quite understand how to do this part with the help 
+# so i did some good old hardcore instead
+substr_start <- substr(x = galaxy, start = 1, stop = 2)
+L <- substr(x = galaxy, start = 1, stop = 2) == "--"
+L1 <- which(L)
+L <- min(L1)
+
+# Followed the step by step guide in the skeleton R2
+cat(galaxy[1:(L-2)], sep = "\n", file = "galaxy.txt")
+
+
+# Followed the step by step guide in the skeleton R2, this was pretty easy to do
+# the guide was rly helpful
+variable_names <- str_split(string = galaxy[L-1], pattern = "\\|") %>% 
+  unlist() %>% 
+  str_trim()
+
+# Followed the step by step guide in the skeleton R2
+#again the job was basically done for me 
+comma_separated_values <- galaxy[(L+1):length(galaxy)] %>%
+  gsub("\\|", ",", .) %>%
+  gsub(" ", "", .)
+
+
+# Followed the step by step guide in the skeleton R2
+comma_separated_values_with_names <- c(paste(variable_names, collapse = ","), 
+                                       comma_separated_values)
+
+# Followed the step by step guide in the skeleton R2
+cat(comma_separated_values_with_names, sep = "\n", file = "cleaned_data.csv")
+
+## Followed the step by step guide in the skeleton R2 
+galaxies <- read_csv("cleaned_data.csv")
+
+#Problem 3
+#remove NA values
+galaxies <- na.omit(galaxies)
+# i feel like if we want to look at misrepresented objects we can use 
+# different method, however a possible explanation for why 
+# smaller objects are under represented in the sample might be  
+# that since they are so far away their light might not be that easy to 
+# capture leading to not only physical limitations in gear, but lack of  
+# good observations in the date due to other limitations. the sample should
+# probably be big enough, is overfitting a problem ?
+
+# inspect the scope of a variable i want to test
+summary(galaxies$log_lk)
+
+# But since i now can see that there are not that big of difference i can just
+# try and create a scatter plot where i can see if there is a difference with how far away
+# and what their mass are, but i want to look into the worst quantile so i need to 
+# extract that data and color it a different color in my plot to see if this
+# relation that i came up with is in fact correct
+ggplot(galaxies, aes(x = D, y = log_lk)) +
+  geom_point() + 
+  theme_minimal() +
+  labs(title = "Scatter plot",
+       x = "D",
+       y = "log_lk")
+
+#testing out my theory
+firstquantile <- quantile(galaxies$log_lk, 0.25, na.rm = TRUE)
+
+# creating the new plot with the color that represent the small galaxies 
+
+Tatooine <- ggplot(galaxies, aes(x = D, y = log_lk)) + 
+  geom_point()
+
+# Add points from the first quantile in red
+Tatooine <- Tatooine + geom_point(data = subset(galaxies, log_lk <= firstquantile), 
+                    aes(x = D, y = log_lk), color = "red")
+# View plot
+Tatooine
+# Now i want to add some lables
+
+Tatooine <- Tatooine + theme_classic() + 
+  labs(title = "Oh hello there",
+       x = "Far far away",
+       y = "Size")
+# view 
+Tatooine
+
+# oh hello there 
+# This plot represents great this effect
+# We can clearly see that the smaller objects are filtered inn at the bottom
+# of the scale, but the distance towards them does not seem to matter that much
+# However we can clearly see that the amount of observations beyond a certain 
+# distance have great impact on the amount of obesrvations seen
+# thus somewhat confirming what we already where thinking
+# This plot represents great this effect
+# We can clearly see that the smaller objects are filtered inn at the bottom
+# of the scale, but the distance towards them does not seem to matter that much
+# However we can clearly see that the amount of observations beyond a certain 
+# distance have great impact on the amount of obesrvations seen
+# thus somewhat confirming what we already where thinking
+            
+          
